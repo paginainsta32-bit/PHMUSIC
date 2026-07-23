@@ -1,5 +1,5 @@
 ﻿// Substitua pela URL pública do seu arquivo musicas.json no R2
-const JSON_URL = 'https://pub-xxxxxx.r2.dev/musicas.json';
+const JSON_URL = 'https://pub-dd2f575cd0624a87868bdcc44b319966.r2.dev/musicas.json';
 
 const audio = document.getElementById('audio-player');
 const playBtn = document.getElementById('btn-play');
