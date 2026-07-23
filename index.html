@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meu Web Player de Música</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="player-container">
+    
+    <!-- Sidebar / Lista de Músicas -->
+    <aside class="playlist-section">
+      <h2><i class="fa-solid fa-music"></i> Minha Biblioteca</h2>
+      <ul id="playlist" class="playlist-list">
+        <!-- Lista carregada via JS -->
+      </ul>
+    </aside>
+
+    <!-- Player Principal -->
+    <main class="player-main">
+      <div class="now-playing-card">
+        <div class="cover-wrapper">
+          <img id="track-cover" src="https://via.placeholder.com/300?text=Sem+Capa" alt="Capa do Álbum">
+        </div>
+        
+        <div class="track-details">
+          <h1 id="track-title">Selecione uma música</h1>
+          <p id="track-artist">Artista</p>
+        </div>
+
+        <!-- Barra de Progresso -->
+        <div class="progress-area">
+          <span id="current-time">0:00</span>
+          <input type="range" id="progress-bar" value="0" min="0" max="100">
+          <span id="total-duration">0:00</span>
+        </div>
+
+        <!-- Controles -->
+        <div class="controls">
+          <button id="btn-prev" class="btn-control"><i class="fa-solid fa-backward-step"></i></button>
+          <button id="btn-play" class="btn-control btn-play-main"><i class="fa-solid fa-play" id="play-icon"></i></button>
+          <button id="btn-next" class="btn-control"><i class="fa-solid fa-forward-step"></i></button>
+        </div>
+
+        <!-- Volume -->
+        <div class="volume-container">
+          <i class="fa-solid fa-volume-high"></i>
+          <input type="range" id="volume-bar" value="100" min="0" max="100">
+        </div>
+      </div>
+    </main>
+
+  </div>
+
+  <audio id="audio-player"></audio>
+  <script src="app.js"></script>
+</body>
+</html>
