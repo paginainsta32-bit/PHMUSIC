@@ -1,5 +1,5 @@
-﻿// Substitua pela URL pública do seu arquivo musicas.json no R2
 const JSON_URL = 'https://old-star-b1d3api-musicas.paginainsta32.workers.dev';
+
 const audio = document.getElementById('audio-player');
 const playBtn = document.getElementById('btn-play');
 const playIcon = document.getElementById('play-icon');
@@ -13,36 +13,49 @@ const currentTimeEl = document.getElementById('current-time');
 const totalDurationEl = document.getElementById('total-duration');
 const volumeBar = document.getElementById('volume-bar');
 const playlistEl = document.getElementById('playlist');
+const searchInput = document.getElementById('search-input');
 
 let songs = [];
+let filteredSongs = [];
 let currentSongIndex = 0;
 let isPlaying = false;
 
-// Carregar catálogo de músicas do R2
+// Carregar músicas da Worker
 async function loadSongs() {
   try {
     const response = await fetch(JSON_URL);
     songs = await response.json();
+    filteredSongs = [...songs];
 
     if (songs.length > 0) {
-      renderPlaylist();
+      renderPlaylist(filteredSongs);
       loadSong(0);
     } else {
       trackTitle.textContent = "Nenhuma música encontrada";
     }
   } catch (error) {
-    console.error("Erro ao carregar o catálogo de músicas:", error);
-    trackTitle.textContent = "Erro ao carregar músicas";
+    console.error("Erro ao carregar do Cloudflare Worker:", error);
+    trackTitle.textContent = "Erro ao conectar com PH_MUSIC";
   }
 }
 
-// Renderizar a lista lateral
-function renderPlaylist() {
+// Renderizar a Playlist com suporte a filtro da busca
+function renderPlaylist(playlistArray) {
   playlistEl.innerHTML = '';
-  songs.forEach((song, index) => {
+  
+  if (playlistArray.length === 0) {
+    playlistEl.innerHTML = '<li style="color: #777; font-size: 0.85rem; padding: 10px;">Nenhuma música encontrada</li>';
+    return;
+  }
+
+  playlistArray.forEach((song, index) => {
     const li = document.createElement('li');
     li.classList.add('playlist-item');
-    if (index === currentSongIndex) li.classList.add('active');
+    
+    // Verifica se é a música atual
+    if (songs[currentSongIndex] && song.id === songs[currentSongIndex].id) {
+      li.classList.add('active');
+    }
 
     li.innerHTML = `
       <span class="item-title">${song.titulo}</span>
@@ -50,38 +63,41 @@ function renderPlaylist() {
     `;
 
     li.addEventListener('click', () => {
-      currentSongIndex = index;
-      loadSong(currentSongIndex);
-      playSong();
+      // Encontra o índice real na lista original
+      const realIndex = songs.findIndex(s => s.id === song.id);
+      if (realIndex !== -1) {
+        currentSongIndex = realIndex;
+        loadSong(currentSongIndex);
+        playSong();
+      }
     });
 
     playlistEl.appendChild(li);
   });
 }
 
-// Carregar informações da música no Player
+// Filtro de Busca em tempo real
+searchInput.addEventListener('input', (e) => {
+  const searchTerm = e.target.value.toLowerCase();
+  filteredSongs = songs.filter(song => 
+    song.titulo.toLowerCase().includes(searchTerm) || 
+    song.artista.toLowerCase().includes(searchTerm)
+  );
+  renderPlaylist(filteredSongs);
+});
+
+// Carregar informações no Player
 function loadSong(index) {
   const song = songs[index];
   trackTitle.textContent = song.titulo;
   trackArtist.textContent = song.artista;
-  trackCover.src = song.capa || 'https://via.placeholder.com/300?text=Sem+Capa';
+  trackCover.src = song.capa || 'https://via.placeholder.com/300/181818/1db954?text=PH_MUSIC';
   audio.src = song.url;
 
-  updateActivePlaylistItem();
+  renderPlaylist(filteredSongs);
 }
 
-function updateActivePlaylistItem() {
-  const items = document.querySelectorAll('.playlist-item');
-  items.forEach((item, index) => {
-    if (index === currentSongIndex) {
-      item.classList.add('active');
-    } else {
-      item.classList.remove('active');
-    }
-  });
-}
-
-// Play / Pause
+// Controles Play/Pause
 function playSong() {
   isPlaying = true;
   audio.play();
@@ -104,7 +120,7 @@ playBtn.addEventListener('click', () => {
   }
 });
 
-// Avançar / Voltar
+// Navegação Próxima / Anterior
 prevBtn.addEventListener('click', () => {
   currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
   loadSong(currentSongIndex);
@@ -117,7 +133,7 @@ nextBtn.addEventListener('click', () => {
   playSong();
 });
 
-// Atualizar tempo e barra de progresso
+// Progresso do Áudio
 audio.addEventListener('timeupdate', () => {
   if (audio.duration) {
     const progressPercent = (audio.currentTime / audio.duration) * 100;
@@ -138,7 +154,7 @@ volumeBar.addEventListener('input', (e) => {
   audio.volume = e.target.value / 100;
 });
 
-// Avançar automaticamente ao terminar a música
+// Autoplay para a próxima música
 audio.addEventListener('ended', () => {
   nextBtn.click();
 });
@@ -149,5 +165,5 @@ function formatTime(seconds) {
   return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
 }
 
-// Inicializar
+// Inicializa
 loadSongs();
