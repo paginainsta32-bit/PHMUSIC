@@ -1,0 +1,18 @@
+﻿[
+  {
+    "id": 1,
+    "titulo": "Nome da Música 1",
+    "artista": "Nome do Artista",
+    "album": "Nome do Álbum",
+    "capa": "https://pub-xxxxxx.r2.dev/capas/capa1.jpg",
+    "url": "https://pub-xxxxxx.r2.dev/musica1.mp3"
+  },
+  {
+    "id": 2,
+    "titulo": "Nome da Música 2",
+    "artista": "Nome do Artista",
+    "album": "Nome do Álbum",
+    "capa": "https://pub-xxxxxx.r2.dev/capas/capa2.jpg",
+    "url": "https://pub-xxxxxx.r2.dev/musica2.mp3"
+  }
+]
