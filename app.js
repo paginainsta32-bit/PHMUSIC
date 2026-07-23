@@ -1,6 +1,5 @@
 ﻿// Substitua pela URL pública do seu arquivo musicas.json no R2
-const JSON_URL = 'https://pub-dd2f575cd0624a87868bdcc44b319966.r2.dev/musicas.json';
-
+const JSON_URL = 'https://old-star-b1d3api-musicas.paginainsta32.workers.dev';
 const audio = document.getElementById('audio-player');
 const playBtn = document.getElementById('btn-play');
 const playIcon = document.getElementById('play-icon');
