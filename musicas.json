@@ -5,6 +5,6 @@
     "artista": "Artista",
     "album": "Top Sertanejo",
     "capa": "",
-    "url": "https://pub-dd2f575cd0624a87868bdcc44b319966.r2.dev/@Top%20Sertanejo/NOME_DO_ARQUIVO.mp3"
+    "url": "const JSON_URL = 'https://old-star-b1d3api-musicas.paginainsta32.workers.dev';"
   }
 ]
