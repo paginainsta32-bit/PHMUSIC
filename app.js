@@ -1,7 +1,5 @@
 const JSON_URL = 'https://old-star-b1d3api-musicas.paginainsta32.workers.dev';
-
-// COLOQUE O LINK DA SUA LOGO AQUI:
-const LOGO_URL = 'https://pub-dd2f575cd0624a87868bdcc44b319966.r2.dev/logo_phmusic.png';
+const LOGO_URL = 'https://pub-dd2f575cd0624a87868bdcc44b319966.r2.dev/SUA_LOGO.png'; // Coloque o link da sua logo aqui
 
 const audio = document.getElementById('audio-player');
 const playBtn = document.getElementById('btn-play');
@@ -17,32 +15,75 @@ const totalDurationEl = document.getElementById('total-duration');
 const volumeBar = document.getElementById('volume-bar');
 const playlistEl = document.getElementById('playlist');
 const searchInput = document.getElementById('search-input');
+const folderButtonsContainer = document.getElementById('folder-buttons');
 
-let songs = [];
+let allSongs = [];
 let filteredSongs = [];
 let currentSongIndex = 0;
 let isPlaying = false;
+let currentFolder = 'TODAS';
 
-// Configura a capa inicial com a logo
 trackCover.src = LOGO_URL;
 
-// Carregar músicas da Worker
+// Carregar músicas da API Worker
 async function loadSongs() {
   try {
     const response = await fetch(JSON_URL);
-    songs = await response.json();
-    filteredSongs = [...songs];
+    allSongs = await response.json();
+    filteredSongs = [...allSongs];
 
-    if (songs.length > 0) {
+    if (allSongs.length > 0) {
+      renderFolderButtons();
       renderPlaylist(filteredSongs);
       loadSong(0);
     } else {
       trackTitle.textContent = "Nenhuma música encontrada";
     }
   } catch (error) {
-    console.error("Erro ao carregar do Cloudflare Worker:", error);
+    console.error("Erro ao carregar músicas:", error);
     trackTitle.textContent = "Erro ao conectar com PH_MUSIC";
   }
+}
+
+// Criar botões das Pastas automaticamente
+function renderFolderButtons() {
+  // Extrai todas as pastas únicas presentes no R2
+  const folders = ['TODAS', ...new Set(allSongs.map(song => song.pasta))];
+  folderButtonsContainer.innerHTML = '';
+
+  folders.forEach(folder => {
+    const btn = document.createElement('button');
+    btn.classList.add('btn-folder');
+    if (folder === currentFolder) btn.classList.add('active');
+    
+    btn.textContent = folder === 'TODAS' ? 'Todas as Músicas' : folder;
+
+    btn.addEventListener('click', () => {
+      currentFolder = folder;
+      
+      // Atualiza estado visual do botão selecionado
+      document.querySelectorAll('.btn-folder').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      applyFilters();
+    });
+
+    folderButtonsContainer.appendChild(btn);
+  });
+}
+
+// Aplica filtros combinados (Pasta + Busca)
+function applyFilters() {
+  const searchTerm = searchInput.value.toLowerCase();
+
+  filteredSongs = allSongs.filter(song => {
+    const matchFolder = (currentFolder === 'TODAS') || (song.pasta === currentFolder);
+    const matchSearch = song.titulo.toLowerCase().includes(searchTerm) || 
+                        song.artista.toLowerCase().includes(searchTerm);
+    return matchFolder && matchSearch;
+  });
+
+  renderPlaylist(filteredSongs);
 }
 
 // Renderizar a Playlist
@@ -58,7 +99,7 @@ function renderPlaylist(playlistArray) {
     const li = document.createElement('li');
     li.classList.add('playlist-item');
     
-    if (songs[currentSongIndex] && song.id === songs[currentSongIndex].id) {
+    if (allSongs[currentSongIndex] && song.id === allSongs[currentSongIndex].id) {
       li.classList.add('active');
     }
 
@@ -68,7 +109,7 @@ function renderPlaylist(playlistArray) {
     `;
 
     li.addEventListener('click', () => {
-      const realIndex = songs.findIndex(s => s.id === song.id);
+      const realIndex = allSongs.findIndex(s => s.id === song.id);
       if (realIndex !== -1) {
         currentSongIndex = realIndex;
         loadSong(currentSongIndex);
@@ -80,25 +121,15 @@ function renderPlaylist(playlistArray) {
   });
 }
 
-// Filtro de Busca em tempo real
-searchInput.addEventListener('input', (e) => {
-  const searchTerm = e.target.value.toLowerCase();
-  filteredSongs = songs.filter(song => 
-    song.titulo.toLowerCase().includes(searchTerm) || 
-    song.artista.toLowerCase().includes(searchTerm)
-  );
-  renderPlaylist(filteredSongs);
-});
+// Filtro de Busca
+searchInput.addEventListener('input', applyFilters);
 
-// Carregar informações no Player
+// Carregar no Player
 function loadSong(index) {
-  const song = songs[index];
+  const song = allSongs[index];
   trackTitle.textContent = song.titulo;
   trackArtist.textContent = song.artista;
-  
-  // Força a capa a usar sempre a sua Logo
   trackCover.src = LOGO_URL;
-  
   audio.src = song.url;
 
   renderPlaylist(filteredSongs);
@@ -120,48 +151,49 @@ function pauseSong() {
 }
 
 playBtn.addEventListener('click', () => {
-  if (isPlaying) {
-    pauseSong();
-  } else {
-    playSong();
-  }
+  if (isPlaying) pauseSong();
+  else playSong();
 });
 
-// Navegação Próxima / Anterior
+// Avançar / Voltar dentro da lista filtrada atual
 prevBtn.addEventListener('click', () => {
-  currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+  if (filteredSongs.length === 0) return;
+  const currentFilteredIndex = filteredSongs.findIndex(s => s.id === allSongs[currentSongIndex].id);
+  const nextFilteredIndex = (currentFilteredIndex - 1 + filteredSongs.length) % filteredSongs.length;
+  
+  const realIndex = allSongs.findIndex(s => s.id === filteredSongs[nextFilteredIndex].id);
+  currentSongIndex = realIndex;
   loadSong(currentSongIndex);
   playSong();
 });
 
 nextBtn.addEventListener('click', () => {
-  currentSongIndex = (currentSongIndex + 1) % songs.length;
+  if (filteredSongs.length === 0) return;
+  const currentFilteredIndex = filteredSongs.findIndex(s => s.id === allSongs[currentSongIndex].id);
+  const nextFilteredIndex = (currentFilteredIndex + 1) % filteredSongs.length;
+  
+  const realIndex = allSongs.findIndex(s => s.id === filteredSongs[nextFilteredIndex].id);
+  currentSongIndex = realIndex;
   loadSong(currentSongIndex);
   playSong();
 });
 
-// Progresso do Áudio
 audio.addEventListener('timeupdate', () => {
   if (audio.duration) {
-    const progressPercent = (audio.currentTime / audio.duration) * 100;
-    progressBar.value = progressPercent;
-
+    progressBar.value = (audio.currentTime / audio.duration) * 100;
     currentTimeEl.textContent = formatTime(audio.currentTime);
     totalDurationEl.textContent = formatTime(audio.duration);
   }
 });
 
 progressBar.addEventListener('input', () => {
-  const seekTime = (progressBar.value / 100) * audio.duration;
-  audio.currentTime = seekTime;
+  audio.currentTime = (progressBar.value / 100) * audio.duration;
 });
 
-// Controle de Volume
 volumeBar.addEventListener('input', (e) => {
   audio.volume = e.target.value / 100;
 });
 
-// Autoplay para a próxima música
 audio.addEventListener('ended', () => {
   nextBtn.click();
 });
@@ -172,5 +204,4 @@ function formatTime(seconds) {
   return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
 }
 
-// Inicializa
 loadSongs();
