@@ -1,7 +1,7 @@
 const JSON_URL = 'https://old-star-b1d3api-musicas.paginainsta32.workers.dev';
 
 // COLOQUE O LINK DA SUA LOGO AQUI:
-const LOGO_URL = 'https://pub-dd2f575cd0624a87868bdcc44b319966.r2.dev/SUA_LOGO.png';
+const LOGO_URL = 'https://pub-dd2f575cd0624a87868bdcc44b319966.r2.dev/logo_phmusic.png';
 
 const audio = document.getElementById('audio-player');
 const playBtn = document.getElementById('btn-play');
