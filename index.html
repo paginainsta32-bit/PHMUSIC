@@ -10,7 +10,7 @@
 <body>
   <div class="player-container">
     
-    <!-- Sidebar / Lista de Músicas -->
+    <!-- Sidebar -->
     <aside class="playlist-section">
       <!-- Marca PH_MUSIC -->
       <div class="brand">
@@ -24,6 +24,15 @@
         <input type="text" id="search-input" placeholder="Buscar música ou artista...">
       </div>
 
+      <!-- Filtro de Pastas -->
+      <div class="folders-filter">
+        <p class="filter-title"><i class="fa-solid fa-folder"></i> Categorias / Pastas</p>
+        <div id="folder-buttons" class="folder-buttons-container">
+          <!-- Botões gerados via JS -->
+        </div>
+      </div>
+
+      <!-- Lista de Músicas -->
       <ul id="playlist" class="playlist-list">
         <!-- Lista carregada via JS -->
       </ul>
@@ -41,21 +50,18 @@
           <p id="track-artist">PH_MUSIC</p>
         </div>
 
-        <!-- Barra de Progresso -->
         <div class="progress-area">
           <span id="current-time">0:00</span>
           <input type="range" id="progress-bar" value="0" min="0" max="100">
           <span id="total-duration">0:00</span>
         </div>
 
-        <!-- Controles -->
         <div class="controls">
           <button id="btn-prev" class="btn-control"><i class="fa-solid fa-backward-step"></i></button>
           <button id="btn-play" class="btn-control btn-play-main"><i class="fa-solid fa-play" id="play-icon"></i></button>
           <button id="btn-next" class="btn-control"><i class="fa-solid fa-forward-step"></i></button>
         </div>
 
-        <!-- Volume -->
         <div class="volume-container">
           <i class="fa-solid fa-volume-high"></i>
           <input type="range" id="volume-bar" value="100" min="0" max="100">
