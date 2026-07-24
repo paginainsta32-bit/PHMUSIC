@@ -1,5 +1,8 @@
 const JSON_URL = 'https://old-star-b1d3api-musicas.paginainsta32.workers.dev';
-const LOGO_URL = 'https://pub-dd2f575cd0624a87868bdcc44b319966.r2.dev/logo_phmusic.png';
+
+// COLOQUE O LINK DA SUA LOGO AQUI:
+const LOGO_URL = 'https://pub-dd2f575cd0624a87868bdcc44b319966.r2.dev/SUA_LOGO.png';
+
 const audio = document.getElementById('audio-player');
 const playBtn = document.getElementById('btn-play');
 const playIcon = document.getElementById('play-icon');
@@ -20,6 +23,9 @@ let filteredSongs = [];
 let currentSongIndex = 0;
 let isPlaying = false;
 
+// Configura a capa inicial com a logo
+trackCover.src = LOGO_URL;
+
 // Carregar músicas da Worker
 async function loadSongs() {
   try {
@@ -39,7 +45,7 @@ async function loadSongs() {
   }
 }
 
-// Renderizar a Playlist com suporte a filtro da busca
+// Renderizar a Playlist
 function renderPlaylist(playlistArray) {
   playlistEl.innerHTML = '';
   
@@ -48,11 +54,10 @@ function renderPlaylist(playlistArray) {
     return;
   }
 
-  playlistArray.forEach((song, index) => {
+  playlistArray.forEach((song) => {
     const li = document.createElement('li');
     li.classList.add('playlist-item');
     
-    // Verifica se é a música atual
     if (songs[currentSongIndex] && song.id === songs[currentSongIndex].id) {
       li.classList.add('active');
     }
@@ -63,7 +68,6 @@ function renderPlaylist(playlistArray) {
     `;
 
     li.addEventListener('click', () => {
-      // Encontra o índice real na lista original
       const realIndex = songs.findIndex(s => s.id === song.id);
       if (realIndex !== -1) {
         currentSongIndex = realIndex;
@@ -91,7 +95,10 @@ function loadSong(index) {
   const song = songs[index];
   trackTitle.textContent = song.titulo;
   trackArtist.textContent = song.artista;
-  trackCover.src = song.capa || 'https://via.placeholder.com/300/181818/1db954?text=PH_MUSIC';
+  
+  // Força a capa a usar sempre a sua Logo
+  trackCover.src = LOGO_URL;
+  
   audio.src = song.url;
 
   renderPlaylist(filteredSongs);
