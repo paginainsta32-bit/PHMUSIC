@@ -283,4 +283,57 @@ input[type="range"] {
   .track-details h1 {
     font-size: 1.2rem;
   }
+  /* Filtro de Pastas */
+.folders-filter {
+  margin-bottom: 16px;
+}
+
+.filter-title {
+  font-size: 0.8rem;
+  color: #888;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.folder-buttons-container {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+.folder-buttons-container::-webkit-scrollbar {
+  height: 4px;
+}
+.folder-buttons-container::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 2px;
+}
+
+.btn-folder {
+  background-color: #242424;
+  color: #ccc;
+  border: 1px solid #333;
+  padding: 6px 14px;
+  border-radius: 16px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-folder:hover {
+  background-color: #333;
+  color: #fff;
+}
+
+.btn-folder.active {
+  background-color: #1db954;
+  color: #000;
+  font-weight: 600;
+  border-color: #1db954;
+}
 }
